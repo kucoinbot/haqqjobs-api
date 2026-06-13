@@ -4,12 +4,13 @@ const https = require('https');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const REED_KEY = 'e3d82bd9-5bda-48c8-9a46-7d7baf45a21a';
-const ADZUNA_APP_ID = '6cdb0826';
-const ADZUNA_APP_KEY = '267ec9dee63729f0b65a3b7657c0c850';
+// API keys loaded from Render environment variables — never hardcoded
+const REED_KEY = process.env.REED_API_KEY;
+const ADZUNA_APP_ID = process.env.ADZUNA_APP_ID;
+const ADZUNA_APP_KEY = process.env.ADZUNA_APP_KEY;
 const MIN_SALARY = '25396'; // £12.21/hr annual equivalent
 
-// Allow all origins — needed for browser requests from your site
+// Allow requests from your website
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -26,14 +27,13 @@ function fetchJSON(url, headers = {}, timeoutMs = 10000) {
         try {
           resolve(JSON.parse(body));
         } catch(e) {
-          reject(new Error('Invalid JSON response from API'));
+          reject(new Error('Invalid JSON from API'));
         }
       });
     });
-    // Kill request if it takes too long
     req.setTimeout(timeoutMs, () => {
       req.destroy();
-      reject(new Error(`Request timed out after ${timeoutMs}ms`));
+      reject(new Error('Request timed out'));
     });
     req.on('error', reject);
   });
@@ -44,8 +44,12 @@ app.get('/', (req, res) => {
   res.json({ status: 'HaqqJobs API is running', version: '2.0' });
 });
 
-// Reed API endpoint
+// Reed jobs endpoint
 app.get('/api/reed', async (req, res) => {
+  if (!REED_KEY) {
+    return res.json({ results: [], error: 'REED_API_KEY not set in environment' });
+  }
+
   const keywords = req.query.keywords || 'warehouse security construction care cleaning driver';
   const location = req.query.location || '';
 
@@ -65,15 +69,20 @@ app.get('/api/reed', async (req, res) => {
       'User-Agent': 'HaqqJobs/1.0',
       'Accept': 'application/json'
     });
+    console.log(`Reed: returned ${(data.results || []).length} jobs`);
     res.json(data);
   } catch(e) {
-    console.error('Reed API error:', e.message);
+    console.error('Reed error:', e.message);
     res.json({ results: [], error: e.message });
   }
 });
 
-// Adzuna API endpoint
+// Adzuna jobs endpoint
 app.get('/api/adzuna', async (req, res) => {
+  if (!ADZUNA_APP_ID || !ADZUNA_APP_KEY) {
+    return res.json({ results: [], error: 'ADZUNA keys not set in environment' });
+  }
+
   const keywords = req.query.keywords || 'warehouse security labourer care assistant cleaner driver';
   const location = req.query.location || '';
 
@@ -94,14 +103,14 @@ app.get('/api/adzuna', async (req, res) => {
       'User-Agent': 'HaqqJobs/1.0',
       'Accept': 'application/json'
     });
+    console.log(`Adzuna: returned ${(data.results || []).length} jobs`);
     res.json(data);
   } catch(e) {
-    console.error('Adzuna API error:', e.message);
+    console.error('Adzuna error:', e.message);
     res.json({ results: [], error: e.message });
   }
 });
 
-// Start server
 app.listen(PORT, () => {
   console.log(`HaqqJobs API server running on port ${PORT}`);
 });
