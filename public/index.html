@@ -577,29 +577,43 @@ function filterJobs(cat, btn) {
 function renderJobs(jobs) {
   const container = document.getElementById('jobs-container');
   const gate = document.getElementById('unlock-gate');
-  if (!jobs.length) { container.innerHTML = '<div class="loading">No jobs found. Try a different search.</div>'; if(gate) gate.style.display='none'; return; }
-  container.innerHTML = jobs.map(j => renderJobCard(j)).join('');
+  container.innerHTML = '';
+  if (!jobs.length) {
+    container.innerHTML = '<div class="loading">No jobs found. Try a different search.</div>';
+    if(gate) gate.style.display='none';
+    return;
+  }
+  jobs.forEach(j => container.appendChild(renderJobCard(j)));
   if(gate) gate.style.display = 'block';
-  document.getElementById('total-jobs').textContent = allJobs.length + '+';
+  const totalEl = document.getElementById('total-jobs');
+  if(totalEl) totalEl.textContent = allJobs.length + '+';
 }
 
 function renderJobCard(job) {
   const catColors = {warehouse:'warehouse',security:'security',construction:'construction',driving:'driving',cleaning:'cleaning',care:'care'};
   const cat = catColors[job.category] || 'warehouse';
   const logoColor = getLogoColor(job.company);
-  const initials = job.company.split(' ').map(w=>w[0]).slice(0,3).join('');
-  return '<div class="job-card">' +
+  const initials = (job.company||'').split(' ').map(w=>w[0]).slice(0,3).join('');
+  const safeId = String(job.id).replace(/[^a-zA-Z0-9_-]/g,'');
+  // Store job in global map for safe access
+  window._jobMap = window._jobMap || {};
+  window._jobMap[safeId] = job;
+  const card = document.createElement('div');
+  card.className = 'job-card';
+  card.innerHTML =
     '<div class="company-logo" style="background:' + logoColor + '">' + initials + '</div>' +
     '<div class="job-body"><div class="job-top">' +
-    '<div style="flex:1"><div class="job-title">' + job.title + '</div>' +
-    '<div class="job-company">' + job.company + ' · ' + job.location + '</div>' +
+    '<div style="flex:1"><div class="job-title">' + (job.title||'') + '</div>' +
+    '<div class="job-company">' + (job.company||'') + ' · ' + (job.location||'') + '</div>' +
     '<div class="job-tags"><span class="tag tag-' + cat + '">' + (job.category||'general') + '</span>' +
     (job.trusted ? '<span class="tag tag-trusted">✓ Verified</span>' : '') +
-    '<span class="tag tag-source">' + job.source + '</span></div></div>' +
-    '<div class="job-right"><div class="salary">' + job.salary + '<div class="salary-note">' + job.type + '</div></div>' +
-    '<button class="btn-apply" onclick='openApplyModal(' + JSON.stringify(job).replace(/'/g,"&#39;") + ')'>Apply now</button>' +
-    '<div class="posted-ago">' + job.posted + '</div></div>' +
-    '</div></div></div>';
+    '<span class="tag tag-source">' + (job.source||'') + '</span></div></div>' +
+    '<div class="job-right"><div class="salary">' + (job.salary||'Competitive') + '<div class="salary-note">' + (job.type||'') + '</div></div>' +
+    '<button class="btn-apply">Apply now</button>' +
+    '<div class="posted-ago">' + (job.posted||'') + '</div></div>' +
+    '</div></div>';
+  card.querySelector('.btn-apply').addEventListener('click', function() { openApplyModal(job); });
+  return card;
 }
 
 function searchJobs() {
@@ -620,7 +634,14 @@ function renderHabeshJobs() {
     {id:'h1',title:'Kitchen Assistant',company:'Lalibela Ethiopian Restaurant',location:'London, N4',salary:'£12.21/hr',type:'Part-time',posted:'1 day ago',source:'HaqqJobs',category:'other',applyUrl:'#',trusted:false},
     {id:'h2',title:'Hair Stylist',company:'Asmara Hair & Beauty',location:'Birmingham, B11',salary:'£13.00/hr',type:'Full-time',posted:'2 days ago',source:'HaqqJobs',category:'other',applyUrl:'#',trusted:false}
   ];
-  document.getElementById('habesha-jobs-container').innerHTML = jobs.map(j => renderJobCard(j)).join('');
+  const hc = document.getElementById('habesha-jobs-container');
+  hc.innerHTML = '';
+  jobs.forEach(j => hc.appendChild(renderJobCard(j)));
+}
+
+function applyToJob(id) {
+  const job = allJobs.find(j => String(j.id) === String(id));
+  if (job) openApplyModal(job);
 }
 
 function openApplyModal(job) {
