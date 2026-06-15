@@ -632,15 +632,17 @@ async function loadJobs(keywords, postcode) {
       seen.add(key); return true;
     });
 
-    // Update source label to show API status
+    // Update source label to show real status
     const srcLabel = document.getElementById('source-info');
     if (srcLabel) {
       if (jobs.length > 0) {
         srcLabel.textContent = `${reedOk ? '✓ Reed' : '✗ Reed'} · ${adzunaOk ? '✓ Adzuna' : '✗ Adzuna'} — ${jobs.length} live jobs found`;
         srcLabel.style.color = '#0f6e56';
       } else {
-        srcLabel.textContent = `APIs loading... showing sample jobs`;
-        srcLabel.style.color = '#cc8800';
+        const reedErr = reedOk ? 'OK' : (reed.reason?.message || 'failed');
+        const adzunaErr = adzunaOk ? 'OK' : (adzuna.reason?.message || 'failed');
+        if (srcLabel) srcLabel.textContent = `Reed: ${reedErr} · Adzuna: ${adzunaErr}`;
+        srcLabel.style.color = '#cc0000';
       }
     }
 
