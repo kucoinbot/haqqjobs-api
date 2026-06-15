@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account — HaqqJobs</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; }
+
+/* NAV */
+nav { background: #0f1923; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; height: 60px; position: sticky; top: 0; z-index: 100; }
+.nav-logo { color: white; font-size: 1.3rem; font-weight: 600; text-decoration: none; }
+.nav-logo span { color: #4ade80; }
+.nav-right { display: flex; align-items: center; gap: 1rem; }
+.nav-badge { background: rgba(74,222,128,0.15); color: #4ade80; font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(74,222,128,0.3); }
+.btn-logout { padding: 7px 16px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; }
+
+/* AUTH */
+.auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f1923, #1a3a1a); padding: 2rem; }
+.auth-card { background: white; border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 400px; }
+.auth-card h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.4rem; }
+.auth-card p { color: #666; font-size: 14px; margin-bottom: 2rem; }
+.auth-tabs { display: flex; margin-bottom: 2rem; border-bottom: 2px solid #e8e8e3; }
+.auth-tab { flex: 1; padding: 10px; text-align: center; font-size: 14px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.auth-tab.active { color: #0f1923; font-weight: 600; border-bottom-color: #4ade80; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 5px; }
+.form-group input, .form-group select { width: 100%; padding: 11px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; }
+.form-group input:focus, .form-group select:focus { border-color: #4ade80; }
+.btn-auth { width: 100%; padding: 13px; background: #0f1923; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 0.5rem; }
+.unlock-banner { background: linear-gradient(135deg, #0f1923, #1a3a1a); border-radius: 10px; padding: 1.25rem; color: white; text-align: center; margin-bottom: 1.5rem; }
+.unlock-banner p { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 1rem; }
+.btn-pay { width: 100%; padding: 12px; background: #4ade80; color: #0a1a0a; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; }
+.auth-divider { text-align: center; color: #aaa; font-size: 13px; margin: 1rem 0; }
+
+/* DASHBOARD */
+.dashboard { display: none; }
+.page-wrap { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+
+/* PROFILE HEADER */
+.profile-header { background: linear-gradient(135deg, #0f1923, #1a3a1a); border-radius: 16px; padding: 2rem; color: white; display: flex; gap: 1.5rem; align-items: flex-start; margin-bottom: 2rem; }
+.avatar-wrap { position: relative; flex-shrink: 0; }
+.avatar { width: 72px; height: 72px; border-radius: 50%; background: #4ade80; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700; color: #0a1a0a; }
+.avatar-edit { position: absolute; bottom: 0; right: 0; width: 22px; height: 22px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; }
+.profile-info { flex: 1; }
+.profile-info h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+.profile-info p { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+.profile-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.ptag { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); font-size: 12px; padding: 4px 12px; border-radius: 20px; }
+.ptag.green { background: rgba(74,222,128,0.2); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+.profile-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.btn-edit-profile { padding: 8px 18px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-size: 13px; cursor: pointer; }
+
+/* MAIN GRID */
+.main-grid { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
+
+/* TABS */
+.tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 2px solid #e8e8e3; overflow-x: auto; }
+.tab { padding: 10px 18px; font-size: 14px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; }
+.tab:hover { color: #1a1a1a; }
+.tab.active { color: #0f1923; font-weight: 600; border-bottom-color: #4ade80; }
+
+/* SECTION */
+.section-title { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
+.card { background: white; border: 1px solid #e8e8e3; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+
+/* JOB CARDS - saved & applied */
+.job-row { display: flex; gap: 1rem; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid #f0f0eb; }
+.job-row:last-child { border-bottom: none; }
+.job-logo { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
+.job-info { flex: 1; }
+.job-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.job-meta { font-size: 12px; color: #888; margin-bottom: 6px; }
+.job-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.jtag { font-size: 11px; padding: 2px 9px; border-radius: 10px; }
+.jtag-warehouse { background: #e1f5ee; color: #0f6e56; }
+.jtag-security { background: #e6f1fb; color: #185fa5; }
+.jtag-construction { background: #faeeda; color: #854f0b; }
+.jtag-new { background: #eaf3de; color: #3b6d11; }
+.job-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.salary { font-size: 14px; font-weight: 600; }
+.btn-apply { padding: 6px 14px; background: #0f1923; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-unsave { padding: 6px 14px; background: #f5e8e8; color: #8B0000; border: none; border-radius: 8px; font-size: 12px; cursor: pointer; }
+.applied-time { font-size: 11px; color: #aaa; }
+
+/* STATUS PILLS */
+.status-pill { font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: 600; }
+.s-applied { background: #e6f1fb; color: #185fa5; }
+.s-viewed { background: #faeeda; color: #854f0b; }
+.s-shortlisted { background: #e1f5ee; color: #0f6e56; }
+.s-rejected { background: #f5e8e8; color: #8B0000; }
+
+/* CV SECTION */
+.cv-box { border: 2px dashed #e8e8e3; border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: border-color 0.15s; }
+.cv-box:hover { border-color: #4ade80; }
+.cv-box h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.cv-box p { font-size: 13px; color: #888; margin-bottom: 1rem; }
+.btn-upload { padding: 9px 22px; background: #0f1923; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.cv-uploaded { display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8f8f5; border-radius: 10px; margin-bottom: 1rem; }
+.cv-icon { width: 40px; height: 40px; background: #e1f5ee; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.cv-info strong { display: block; font-size: 14px; }
+.cv-info span { font-size: 12px; color: #888; }
+.cv-actions { margin-left: auto; display: flex; gap: 8px; }
+.btn-cv { padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+.btn-view-cv { background: #f0f0eb; color: #333; }
+.btn-replace { background: #4ade80; color: #0a1a0a; }
+
+/* ALERTS */
+.alert-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f0eb; }
+.alert-row:last-child { border-bottom: none; }
+.alert-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.alert-info { flex: 1; }
+.alert-info strong { font-size: 14px; display: block; }
+.alert-info span { font-size: 12px; color: #888; }
+.toggle { position: relative; width: 40px; height: 22px; background: #4ade80; border-radius: 11px; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
+.toggle.off { background: #ddd; }
+.toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: transform 0.2s; }
+.toggle:not(.off)::after { transform: translateX(18px); }
+.btn-add-alert { width: 100%; padding: 10px; background: #f0f0eb; color: #333; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+
+/* CV TIPS */
+.tip-card { background: white; border: 1px solid #e8e8e3; border-radius: 10px; padding: 1rem; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+.tip-card:hover { border-color: #4ade80; }
+.tip-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.tip-info strong { font-size: 14px; display: block; margin-bottom: 3px; }
+.tip-info span { font-size: 12px; color: #888; }
+.tip-lang { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #0f1923; color: #4ade80; font-weight: 600; }
+
+/* SETTINGS */
+.settings-group { margin-bottom: 1.5rem; }
+.settings-title { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
+.settings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0eb; }
+.settings-row:last-child { border-bottom: none; }
+.settings-label strong { font-size: 14px; display: block; }
+.settings-label span { font-size: 12px; color: #888; }
+.btn-change { padding: 6px 14px; background: #f0f0eb; color: #333; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+/* SIDEBAR */
+.sidebar-card { background: white; border: 1px solid #e8e8e3; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
+.sidebar-title { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0eb; font-size: 14px; }
+.stat-row:last-child { border-bottom: none; }
+.stat-row strong { font-weight: 700; color: #0f1923; }
+
+/* MEMBERSHIP */
+.membership-card { background: linear-gradient(135deg, #0f1923, #1a3a1a); border-radius: 12px; padding: 1.5rem; color: white; margin-bottom: 1.5rem; }
+.mem-label { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.mem-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: #4ade80; }
+.mem-detail { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
+.mem-features { margin-top: 1rem; display: flex; flex-direction: column; gap: 6px; }
+.mem-feat { font-size: 13px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px; }
+.mem-feat::before { content: "✓"; color: #4ade80; font-weight: 700; }
+
+/* WHATSAPP */
+.wa-card { background: #25D366; border-radius: 12px; padding: 1.25rem; color: white; text-align: center; }
+.wa-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.wa-card p { font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 1rem; }
+.btn-wa { width: 100%; padding: 9px; background: white; color: #25D366; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+/* TAB PANELS */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+@media (max-width: 768px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .profile-header { flex-direction: column; }
+  .profile-actions { flex-direction: row; align-self: stretch; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Haqq<span>Jobs</span></a>
+  <div class="nav-right">
+    <span class="nav-badge">✓ Full access</span>
+    <button class="btn-logout" onclick="logout()">Log out</button>
+  </div>
+</nav>
+
+<!-- AUTH SCREEN -->
+<div class="auth-screen" id="auth-screen">
+  <div class="auth-card">
+    <h2>Welcome back</h2>
+    <p>Log in to access your full job board account.</p>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchAuthTab('login')">Log in</div>
+      <div class="auth-tab" onclick="switchAuthTab('register')">Create account</div>
+    </div>
+
+    <div id="login-form">
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" placeholder="••••••••" />
+      </div>
+      <button class="btn-auth" onclick="doLogin()">Log in →</button>
+      <div class="auth-divider">— or —</div>
+      <div class="unlock-banner">
+        <p>Don't have an account yet? Join for £20 one-time and get full access to every UK warehouse, security and construction job — forever.</p>
+        <button class="btn-pay" onclick="doRegisterAndPay()">Join now — £20/year →</button>
+      </div>
+    </div>
+
+    <div id="register-form" style="display:none;">
+      <div class="form-group">
+        <label>Full name</label>
+        <input type="text" placeholder="Your full name" />
+      </div>
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Phone (for WhatsApp job alerts)</label>
+        <input type="tel" placeholder="07..." />
+      </div>
+      <div class="form-group">
+        <label>Preferred language</label>
+        <select>
+          <option>English</option>
+          <option>Tigrinya — ትግርኛ</option>
+          <option>Amharic — አማርኛ</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" placeholder="Create a password" />
+      </div>
+      <button class="btn-auth" onclick="doRegisterAndPay()">Continue to payment — £20/year →</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+<div class="page-wrap">
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="avatar-wrap">
+      <div class="avatar">YM</div>
+      <div class="avatar-edit">✏️</div>
+    </div>
+    <div class="profile-info">
+      <h2>Yohannes Mehari</h2>
+      <p>yohannes.mehari@gmail.com · Sheffield · Member since Jun 2026</p>
+      <div class="profile-tags">
+        <span class="ptag green">✓ Full access — per year</span>
+        <span class="ptag">Warehouse</span>
+        <span class="ptag">Security</span>
+        <span class="ptag">Sheffield & Leeds</span>
+        <span class="ptag">🇬🇧 Tigrinya speaker</span>
+      </div>
+    </div>
+    <div class="profile-actions">
+      <button class="btn-edit-profile" onclick="switchTab('settings')">Edit profile</button>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="main-col">
+
+      <!-- TABS -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('jobs')">🔍 Browse jobs</div>
+        <div class="tab" onclick="switchTab('saved')">❤️ Saved jobs</div>
+        <div class="tab" onclick="switchTab('applied')">📋 Applications</div>
+        <div class="tab" onclick="switchTab('cv')">📄 My CV</div>
+        <div class="tab" onclick="switchTab('alerts')">🔔 Job alerts</div>
+        <div class="tab" onclick="switchTab('settings')">⚙️ Settings</div>
+      </div>
+
+      <!-- BROWSE JOBS -->
+      <div class="tab-panel active" id="panel-jobs">
+        <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+          <input type="text" placeholder="Search jobs..." style="flex:1;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;min-width:180px;" />
+          <select style="padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;background:white;">
+            <option>Sheffield</option><option>Leeds</option><option>Manchester</option><option>London</option><option>All UK</option>
+          </select>
+          <button style="padding:10px 20px;background:#0f1923;color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Search</button>
+        </div>
+        <div class="card">
+          <div class="job-row">
+            <div class="job-logo" style="background:#FF9900;">AMZ</div>
+            <div class="job-info">
+              <div class="job-title">Warehouse Operative — Nights</div>
+              <div class="job-meta">Amazon · Sheffield, S9 · Full-time</div>
+              <div class="job-tags"><span class="jtag jtag-warehouse">Warehouse</span><span class="jtag jtag-new">NEW</span></div>
+            </div>
+            <div class="job-actions">
+              <div class="salary">£12.50/hr</div>
+              <button class="btn-apply">Apply now</button>
+              <span style="font-size:11px;color:#aaa;">1 hr ago · Reed</span>
+            </div>
+          </div>
+          <div class="job-row">
+            <div class="job-logo" style="background:#003087;">G4S</div>
+            <div class="job-info">
+              <div class="job-title">Security Officer</div>
+              <div class="job-meta">G4S · Leeds, LS1 · Full-time</div>
+              <div class="job-tags"><span class="jtag jtag-security">Security</span></div>
+            </div>
+            <div class="job-actions">
+              <div class="salary">£13.50/hr</div>
+              <button class="btn-apply">Apply now</button>
+              <span style="font-size:11px;color:#aaa;">4 hrs ago · Adzuna</span>
+            </div>
+          </div>
+          <div class="job-row">
+            <div class="job-logo" style="background:#DC0032;">DPD</div>
+            <div class="job-info">
+              <div class="job-title">Parcel Sorter — Early Mornings</div>
+              <div class="job-meta">DPD Group · Sheffield, S6 · Part-time</div>
+              <div class="job-tags"><span class="jtag jtag-warehouse">Warehouse</span><span class="jtag jtag-new">NEW</span></div>
+            </div>
+            <div class="job-actions">
+              <div class="salary">£12.21/hr</div>
+              <button class="btn-apply">Apply now</button>
+              <span style="font-size:11px;color:#aaa;">Today · Indeed</span>
+            </div>
+          </div>
+          <div class="job-row">
+            <div class="job-logo" style="background:#2d6a2d;">ASL</div>
+            <div class="job-info">
+              <div class="job-title">Construction Labourer</div>
+              <div class="job-meta">Asland Construction · Sheffield, S2 · Full-time</div>
+              <div class="job-tags"><span class="jtag jtag-construction">Construction</span></div>
+            </div>
+            <div class="job-actions">
+              <div class="salary">£13.00/hr</div>
+              <button class="btn-apply">Apply now</button>
+              <span style="font-size:11px;color:#aaa;">Yesterday · Reed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAVED JOBS -->
+      <div class="tab-panel" id="panel-saved">
+        <div class="section-title">Saved jobs (3)</div>
+        <div class="card">
+          <div class="job-row">
+            <div class="job-logo" style="background:#FF9900;">AMZ</div>
+            <div class="job-info">
+              <div class="job-title">Amazon Warehouse Picker</div>
+              <div class="job-meta">Amazon (via Adecco) · Rotherham · Full-time</div>
+              <div class="job-tags"><span class="jtag jtag-warehouse">Warehouse</span></div>
+            </div>
+            <div class="job-actions">
+              <div class="salary">£12.21/hr</div>
+              <button class="btn-apply">Apply now</button>
+              <button class="btn-unsave">Remove</button>
+            </div>
+          </div>
+          <div class="job-row">
+            <div class="job-logo" style="background:#CC0000;">SEC</div>
+            <div class="job-info">
+              <div class="job-title">Door Supervisor — SIA Required</div>
+              <div class="job-meta">Securitas · Leeds · Weekends</div>
+              <div class="job-tags"><span class="jtag jtag-security">Security</span></div>
+            </div>
+            <div class="job-actions">
+              <div class="salary">£14.00/hr</div>
+              <button class="btn-apply">Apply now</button>
+              <button class="btn-unsave">Remove</button>
+            </div>
+          </div>
+          <div class="job-row">
+            <div class="job-logo" style="background:#0066CC;">WIN</div>
+            <div class="job-info">
+              <div class="job-title">HGV Class 2 Driver</div>
+              <div class="job-meta">Wincanton · Doncaster · Full-time</div>
+              <div class="job-tags"><span class="jtag" style="background:#fbeaf0;color:#993556;">Driving</span></div>
+            </div>
+            <div class="job-actions">
+              <div class="salary">£16.00/hr</div>
+              <button class="btn-apply">Apply now</button>
+              <button class="btn-unsave">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APPLICATIONS -->
+      <div class="tab-panel" id="panel-applied">
+        <div class="section-title">Your applications (5)</div>
+        <div class="card">
+          <div class="job-row">
+            <div class="job-logo" style="background:#FF9900;">AMZ</div>
+            <div class="job-info">
+              <div class="job-title">Warehouse Operative</div>
+              <div class="job-meta">Amazon · Coventry</div>
+            </div>
+            <div class="job-actions">
+              <span class="status-pill s-shortlisted">⭐ Shortlisted</span>
+              <div class="applied-time">Applied 2 days ago</div>
+            </div>
+          </div>
+          <div class="job-row">
+            <div class="job-logo" style="background:#003087;">G4S</div>
+            <div class="job-info">
+              <div class="job-title">Security Officer</div>
+              <div class="job-meta">G4S · Birmingham</div>
+            </div>
+            <div class="job-actions">
+              <span class="status-pill s-viewed">👁 CV viewed</span>
+              <div class="applied-time">Applied 3 days ago</div>
+            </div>
+          </div>
+          <div class="job-row">
+            <div class="job-logo" style="background:#DC0032;">DPD</div>
+            <div class="job-info">
+              <div class="job-title">Parcel Sorter</div>
+              <div class="job-meta">DPD · Sheffield</div>
+            </div>
+            <div class="job-actions">
+              <span class="status-pill s-applied">Sent</span>
+              <div class="applied-time">Applied today</div>
+            </div>
+          </div>
+          <div class="job-row">
+            <div class="job-logo" style="background:#E63946;">BB</div>
+            <div class="job-info">
+              <div class="job-title">Construction Labourer</div>
+              <div class="job-meta">Balfour Beatty · Manchester</div>
+            </div>
+            <div class="job-actions">
+              <span class="status-pill s-rejected">Not selected</span>
+              <div class="applied-time">Applied 1 week ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CV -->
+      <div class="tab-panel" id="panel-cv">
+        <div class="section-title">My CV</div>
+        <div class="cv-uploaded">
+          <div class="cv-icon">📄</div>
+          <div class="cv-info">
+            <strong>Yohannes_Mehari_CV.pdf</strong>
+            <span>Uploaded 5 Jun 2026 · 1 page · 245kb</span>
+          </div>
+          <div class="cv-actions">
+            <button class="btn-cv btn-view-cv">View</button>
+            <button class="btn-cv btn-replace">Replace</button>
+          </div>
+        </div>
+        <div class="cv-box">
+          <h4>📋 Need help with your CV?</h4>
+          <p>We offer a personal CV writing service. One of our team will write a professional UK CV for you in English — tailored for warehouse, security and construction jobs.</p>
+          <button class="btn-upload" onclick="alert('Contact us on WhatsApp to book your CV service')">Book CV service →</button>
+        </div>
+      </div>
+
+      <!-- ALERTS -->
+      <div class="tab-panel" id="panel-alerts">
+        <div class="section-title">Job alerts — get notified when new jobs are posted</div>
+        <div class="card">
+          <div class="alert-row">
+            <div class="alert-icon" style="background:#e1f5ee;">🏭</div>
+            <div class="alert-info">
+              <strong>Warehouse jobs — Sheffield</strong>
+              <span>Email + WhatsApp · Every day</span>
+            </div>
+            <div class="toggle" onclick="this.classList.toggle('off')"></div>
+          </div>
+          <div class="alert-row">
+            <div class="alert-icon" style="background:#e6f1fb;">🔒</div>
+            <div class="alert-info">
+              <strong>Security jobs — Leeds & Sheffield</strong>
+              <span>Email only · Every 2 days</span>
+            </div>
+            <div class="toggle" onclick="this.classList.toggle('off')"></div>
+          </div>
+          <div class="alert-row">
+            <div class="alert-icon" style="background:#faeeda;">🏗</div>
+            <div class="alert-info">
+              <strong>Amazon warehouse — all UK</strong>
+              <span>WhatsApp only · Instantly</span>
+            </div>
+            <div class="toggle" onclick="this.classList.toggle('off')"></div>
+          </div>
+          <div class="alert-row">
+            <div class="alert-icon" style="background:#fbeaf0;">🚛</div>
+            <div class="alert-info">
+              <strong>Driving jobs — Yorkshire</strong>
+              <span>Email only · Weekly</span>
+            </div>
+            <div class="toggle off" onclick="this.classList.toggle('off')"></div>
+          </div>
+          <button class="btn-add-alert">+ Add new alert</button>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="tab-panel" id="panel-settings">
+        <div class="settings-group">
+          <div class="settings-title">Personal information</div>
+          <div class="card">
+            <div class="settings-row">
+              <div class="settings-label"><strong>Full name</strong><span>Yohannes Mehari</span></div>
+              <button class="btn-change">Change</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label"><strong>Email address</strong><span>yohannes.mehari@gmail.com</span></div>
+              <button class="btn-change">Change</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label"><strong>Phone number</strong><span>07700 900 123</span></div>
+              <button class="btn-change">Change</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label"><strong>Location</strong><span>Sheffield, S1</span></div>
+              <button class="btn-change">Change</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label"><strong>Preferred language</strong><span>Tigrinya — ትግርኛ</span></div>
+              <button class="btn-change">Change</button>
+            </div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-title">Job preferences</div>
+          <div class="card">
+            <div class="settings-row">
+              <div class="settings-label"><strong>Job types</strong><span>Warehouse, Security</span></div>
+              <button class="btn-change">Change</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label"><strong>Preferred locations</strong><span>Sheffield, Leeds, Rotherham</span></div>
+              <button class="btn-change">Change</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label"><strong>Min. hourly pay</strong><span>£12.21/hr</span></div>
+              <button class="btn-change">Change</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label"><strong>Work pattern</strong><span>Full-time, nights OK</span></div>
+              <button class="btn-change">Change</button>
+            </div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-title">Account & security</div>
+          <div class="card">
+            <div class="settings-row">
+              <div class="settings-label"><strong>Password</strong><span>Last changed never</span></div>
+              <button class="btn-change">Change</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label"><strong>Delete account</strong><span>Permanently delete your data</span></div>
+              <button class="btn-change" style="color:#cc4444;">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="membership-card">
+        <div class="mem-label">Your membership</div>
+        <div class="mem-title">✓ Full access — active</div>
+        <div class="mem-detail">£20/year · Joined 9 Jun 2026</div>
+        <div class="mem-detail">Renews 9 Jun 2027 · Cancel anytime</div>
+        <div class="mem-features">
+          <div class="mem-feat">All job listings unlocked</div>
+          <div class="mem-feat">Job alerts by email & WhatsApp</div>
+          <div class="mem-feat">Habesha business jobs</div>
+          <div class="mem-feat">Direct apply links</div>
+          <div class="mem-feat">Personal CV service available</div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">Your activity</div>
+        <div class="stat-row"><span>Jobs viewed</span><strong>47</strong></div>
+        <div class="stat-row"><span>Jobs saved</span><strong>3</strong></div>
+        <div class="stat-row"><span>Applications sent</span><strong>5</strong></div>
+        <div class="stat-row"><span>CVs viewed by employers</span><strong>2</strong></div>
+        <div class="stat-row"><span>Shortlisted</span><strong style="color:#0f6e56;">1 ⭐</strong></div>
+      </div>
+
+      <div class="wa-card">
+        <h4>📱 WhatsApp job alerts</h4>
+        <p>Get Amazon & warehouse jobs sent directly to your WhatsApp — before anyone else sees them</p>
+        <button class="btn-wa">Join WhatsApp group →</button>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">Refer a friend</div>
+        <p style="font-size:13px;color:#666;margin-bottom:1rem;line-height:1.5;">Know someone who needs a job? Share HaqqJobs with them. Help your community find work.</p>
+        <div style="background:#f5f5f0;border-radius:8px;padding:10px;font-size:13px;color:#333;font-weight:600;text-align:center;cursor:pointer;" onclick="copyLink()">haqqjobs.co.uk 📋</div>
+        <p style="font-size:11px;color:#aaa;text-align:center;margin-top:6px;">Tap to copy your share link</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('login-form').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('register-form').style.display = tab==='register' ? 'block' : 'none';
+}
+
+function doLogin() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+}
+
+function doRegisterAndPay() {
+  alert('Redirecting to Stripe payment — £20 one time...\n(Connect your Stripe link here)');
+}
+
+function logout() {
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const tabs = ['jobs','saved','applied','cv','alerts','settings'];
+  const idx = tabs.indexOf(tab);
+  if (idx >= 0) {
+    document.querySelectorAll('.tab')[idx].classList.add('active');
+    document.getElementById('panel-' + tab).classList.add('active');
+  }
+}
+
+function copyLink() {
+  navigator.clipboard.writeText('https://haqqjobs.co.uk').then(() => alert('Link copied!')).catch(() => alert('haqqjobs.co.uk'));
+}
+</script>
+</body>
+</html>
