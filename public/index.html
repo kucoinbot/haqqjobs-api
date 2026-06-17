@@ -19,12 +19,13 @@ nav { background: #111827; padding: 0 1.5rem; display: flex; justify-content: sp
 .btn-nav:hover { background: #3ecf73; }
 
 /* HERO HERO SECTION */
-.hero { background: radial-gradient(circle at top, #1e293b 0%, #0b0f17 100%); text-align: center; padding: 5rem 1rem 6rem 1rem; position: relative; border-bottom: 1px solid #1f2937; }
-.hero h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 0.75rem; letter-spacing: -1px; color: white; }
+.hero { background: radial-gradient(circle at top, #1e293b 0%, #0b0f17 100%); text-align: center; padding: 4.5rem 1rem 5rem 1rem; position: relative; border-bottom: 1px solid #1f2937; }
+.hero h1 { font-size: 2.6rem; font-weight: 800; margin-bottom: 0.75rem; letter-spacing: -1px; color: white; }
 .hero p { color: #9ca3af; font-size: 1.1rem; max-width: 600px; margin: 0 auto 2.5rem auto; line-height: 1.6; }
 
 /* ADZUNA-STYLE SPLIT INPUT SEARCH CONTAINER */
 .search-container { max-width: 850px; margin: 0 auto; background: #111827; padding: 6px; border-radius: 14px; display: flex; align-items: center; gap: 0; border: 1px solid #374151; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+.search-container:focus-within { border-color: #4ade80; }
 .search-group { flex: 1; display: flex; align-items: center; padding: 0 16px; position: relative; }
 .search-group:first-child { border-right: 1px solid #374151; }
 .search-icon { font-size: 18px; margin-right: 10px; color: #6b7280; }
@@ -33,25 +34,28 @@ nav { background: #111827; padding: 0 1.5rem; display: flex; justify-content: sp
 .btn-search { background: #4ade80; color: #0b0f17; border: none; padding: 14px 38px; font-size: 15px; font-weight: 700; border-radius: 10px; cursor: pointer; transition: background 0.2s; margin-left: 6px; }
 .btn-search:hover { background: #3ecf73; }
 
-/* GRID LAYOUT: CORE FEED + SIDEBAR AD PANELS */
-.main-layout { max-width: 1250px; margin: -2.5rem auto 5rem auto; padding: 0 1rem; display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; position: relative; z-index: 10; }
+/* GRID LAYOUT FOR BALANCED DISPLAY: LEFT AD BAR + CENTER MAIN FEED + RIGHT AD BAR */
+.main-layout { max-width: 1440px; margin: -2rem auto 5rem auto; padding: 0 1rem; display: grid; grid-template-columns: 240px 1fr 240px; gap: 1.5rem; position: relative; z-index: 10; }
 
-/* LEFT SIDEBAR AD / BRANDING BOX */
-.sidebar-left { display: flex; flex-direction: column; gap: 1.25rem; }
-.ad-card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
-.ad-card.premium-sponsor { border-color: #4ade80; position: relative; overflow: hidden; }
-.ad-card.premium-sponsor::before { content: 'SPONSOR'; position: absolute; top: 12px; right: -25px; background: #4ade80; color: #0b0f17; font-size: 9px; font-weight: 800; padding: 2px 24px; transform: rotate(45deg); letter-spacing: 0.5px; }
-.ad-title { font-size: 11px; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.ad-heading { font-size: 16px; font-weight: 700; color: white; margin-bottom: 8px; line-height: 1.4; }
-.ad-desc { font-size: 13px; color: #9ca3af; margin-bottom: 1.25rem; line-height: 1.5; }
-.btn-ad-action { display: block; text-align: center; width: 100%; padding: 10px; background: #1f2937; color: white; text-decoration: none; font-size: 13px; font-weight: 600; border-radius: 8px; transition: background 0.2s, color 0.2s; border: 1px solid #374151; }
+/* SIDEBAR WRAPPERS (STAYS FIXED TO VIEWPORT AS YOU SCROLL LISTINGS) */
+.sidebar-ad-wrapper { display: flex; flex-direction: column; gap: 1.25rem; position: sticky; top: 84px; height: fit-content; }
+
+/* PREMIUM AD DISPLAY CARDS */
+.ad-card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.4); text-align: left; position: relative; }
+.ad-card.premium-sponsor { border-color: #4ade80; }
+.ad-card.premium-sponsor::after { content: 'SPONSOR'; position: absolute; top: 8px; right: 8px; background: rgba(74,222,128,0.15); color: #4ade80; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; }
+.ad-title-tag { font-size: 10px; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: inline-block; }
+.ad-heading { font-size: 15px; font-weight: 700; color: white; margin-bottom: 6px; line-height: 1.4; }
+.ad-desc { font-size: 12.5px; color: #9ca3af; margin-bottom: 1.25rem; line-height: 1.5; }
+.btn-ad-action { display: block; text-align: center; width: 100%; padding: 9px; background: #1f2937; color: white; text-decoration: none; font-size: 12px; font-weight: 600; border-radius: 8px; transition: background 0.2s, color 0.2s; border: 1px solid #374151; }
 .btn-ad-action:hover { background: #4ade80; color: #0b0f17; border-color: #4ade80; }
 
-/* FEED WRAPPER */
-.main-feed-area { display: flex; flex-direction: column; gap: 1.25rem; }
+/* CENTER FEED AREA */
+.main-feed-area { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
 
 /* CATEGORY FILTER TABS */
 .tabs { display: flex; gap: 6px; background: #111827; padding: 6px; border-radius: 12px; border: 1px solid #1f2937; overflow-x: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.tabs::-webkit-scrollbar { display: none; }
 .tab-btn { border: none; background: none; color: #9ca3af; padding: 10px 18px; font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
 .tab-btn:hover { color: white; background: rgba(255,255,255,0.03); }
 .tab-btn.active { background: #4ade80; color: #0b0f17; }
@@ -61,29 +65,29 @@ nav { background: #111827; padding: 0 1.5rem; display: flex; justify-content: sp
 .feed-header { display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
 .status-text { font-size: 13px; color: #9ca3af; font-weight: 500; }
 
-/* JOB CARDS STYLE */
+/* JOB CARDS */
 .jobs-container { display: flex; flex-direction: column; gap: 1rem; }
 .job-card { background: #111827; border-radius: 14px; padding: 1.5rem; border: 1px solid #1f2937; display: flex; justify-content: space-between; align-items: flex-start; cursor: pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 .job-card:hover { transform: translateY(-2px); border-color: #4ade80; box-shadow: 0 12px 24px -5px rgba(74,222,128,0.05); }
-.job-main { flex: 1; }
+.job-main { flex: 1; min-width: 0; }
 .job-category-tag { display: inline-block; padding: 4px 10px; background: #1f2937; color: #4ade80; font-size: 11px; font-weight: 700; border-radius: 6px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-.job-title { font-size: 19px; font-weight: 700; color: white; margin-bottom: 6px; line-height: 1.3; }
+.job-title { font-size: 19px; font-weight: 700; color: white; margin-bottom: 6px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .job-company { font-size: 15px; color: #9ca3af; margin-bottom: 16px; font-weight: 500; }
 .job-meta { display: flex; flex-wrap: wrap; gap: 18px; font-size: 14px; color: #9ca3af; }
 .meta-item { display: flex; align-items: center; gap: 6px; }
-.job-side { display: flex; flex-direction: column; align-items: flex-end; gap: 20px; margin-left: 1rem; }
+.job-side { display: flex; flex-direction: column; align-items: flex-end; gap: 20px; margin-left: 1.5rem; flex-shrink: 0; }
 .source-tag { font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 6px; background: #1f2937; border: 1px solid #374151; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
 .source-tag.reed { background: rgba(30,64,175,0.2); color: #60a5fa; border-color: rgba(30,64,175,0.4); }
 .source-tag.adzuna { background: rgba(157,23,77,0.2); color: #f472b6; border-color: rgba(157,23,77,0.4); }
 .btn-apply-card { padding: 10px 22px; background: #1f2937; color: white; border: 1px solid #374151; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
 .job-card:hover .btn-apply-card { background: #4ade80; color: #0b0f17; border-color: #4ade80; }
 
-/* LOADING/ERROR WINDOWS */
+/* STATE SCREENS */
 .loading { text-align: center; padding: 5rem 1rem; color: #9ca3af; background: #111827; border-radius: 14px; border: 1px solid #1f2937; }
 .spinner { width: 36px; height: 36px; border: 3px solid #1f2937; border-top-color: #4ade80; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.25rem auto; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* POPUP SYSTEM INTERFACE */
+/* POPUPS */
 .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,7,11,0.85); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
 .overlay.open { opacity: 1; pointer-events: auto; }
 .modal { background: #111827; width: 100%; max-width: 480px; border-radius: 20px; padding: 2rem; border: 1px solid #1f2937; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transform: translateY(15px); transition: transform 0.2s; position: relative; color: white; }
@@ -99,9 +103,14 @@ nav { background: #111827; padding: 0 1.5rem; display: flex; justify-content: sp
 .btn-submit { width: 100%; padding: 13px; background: #4ade80; color: #0b0f17; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s; }
 .btn-submit:hover { background: #3ecf73; }
 
+/* RESPONSIVE LAYOUT RESPONSES */
+@media (max-width: 1200px) {
+  .main-layout { grid-template-columns: 220px 1fr; }
+  .sidebar-right { display: none; }
+}
 @media (max-width: 968px) {
   .main-layout { grid-template-columns: 1fr; margin-top: 1rem; }
-  .sidebar-left { order: 2; margin-top: 1rem; }
+  .sidebar-left { display: none; }
 }
 @media (max-width: 768px) {
   .hero h1 { font-size: 2.1rem; }
@@ -143,19 +152,18 @@ nav { background: #111827; padding: 0 1.5rem; display: flex; justify-content: sp
 
 <div class="main-layout">
   
-  <aside class="sidebar-left">
+  <aside class="sidebar-ad-wrapper sidebar-left">
     <div class="ad-card premium-sponsor">
-      <div class="ad-title">Featured Business</div>
+      <span class="ad-title-tag">Featured Food</span>
       <div class="ad-heading">Zara Habesha Restaurant</div>
-      <div class="ad-desc">Authentic traditional dining in Birmingham. We are currently looking for part-time front of house waiting staff.</div>
-      <a href="#" onclick="openPostModal(true)" class="btn-ad-action">Apply Directly</a>
+      <div class="ad-desc">Authentic traditional dining in Birmingham. We are hiring part-time waiting staff immediately.</div>
+      <a href="#" onclick="openPostModal(true)" class="btn-ad-action">Apply Now</a>
     </div>
-
     <div class="ad-card">
-      <div class="ad-title">Community Notice</div>
-      <div class="ad-heading">Advertise with us</div>
-      <div class="ad-desc">Reach thousands of targeted applicants across the United Kingdom every single month.</div>
-      <a href="#" onclick="openPostModal(false)" class="btn-ad-action">Book Ad Space</a>
+      <span class="ad-title-tag">Legal Partner</span>
+      <div class="ad-heading">UK Immigration Hub</div>
+      <div class="ad-desc">Professional workspace visa help, community settlement assistance, and sponsorship guidance.</div>
+      <a href="mailto:info@abayjobs.com" class="btn-ad-action">Contact Helpline</a>
     </div>
   </aside>
 
@@ -176,6 +184,22 @@ nav { background: #111827; padding: 0 1.5rem; display: flex; justify-content: sp
 
     <div id="jobs-list" class="jobs-container"></div>
   </main>
+
+  <aside class="sidebar-ad-wrapper sidebar-right">
+    <div class="ad-card">
+      <span class="ad-title-tag">Grow Business</span>
+      <div class="ad-heading">Promote Your Services</div>
+      <div class="ad-desc">Reach thousands of active community applicants in London, Birmingham, and Manchester.</div>
+      <a href="#" onclick="openPostModal(false)" class="btn-ad-action">Book Ad Space</a>
+    </div>
+    <div class="ad-card" style="background: linear-gradient(135deg, #111827 0%, #1e1b4b 100%);">
+      <span class="ad-title-tag" style="color:#a78bfa;">Community Notice</span>
+      <div class="ad-heading">Post Free Offers</div>
+      <div class="ad-desc">Are you a Habesha-owned family workspace? Post your open listings today for zero charge.</div>
+      <a href="#" onclick="openPostModal(true)" class="btn-ad-action" style="border-color:#a78bfa; color:#a78bfa;">Get Started</a>
+    </div>
+  </aside>
+
 </div>
 
 <div id="apply-modal" class="overlay">
@@ -332,7 +356,7 @@ function showJobs(filter) {
     html += '<div class="job-card" onclick="openApplyModal(' + JSON.stringify(j).replace(/"/g, '&quot;') + ')">' +
               '<div class="job-main">' +
                 '<div class="job-category-tag">' + j.category.toUpperCase() + '</div>' +
-                '<div class="job-title">' + escapeHTML(j.title) + '</div>' +
+                '<div class="job-title" title="' + escapeHTML(j.title) + '">' + escapeHTML(j.title) + '</div>' +
                 '<div class="job-company">' + escapeHTML(j.company) + '</div>' +
                 '<div class="job-meta">' +
                   '<div class="meta-item">📍 ' + escapeHTML(j.location) + '</div>' +
