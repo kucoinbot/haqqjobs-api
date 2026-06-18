@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HaqqJobs — UK Jobs for the Habesha Community</title>
+<title>AbayJobs — UK Jobs for the Habesha Community</title>
 <style>
 /* ─── RESET & BASE ─────────────────────────────────────────── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -150,9 +150,8 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
 </head>
 <body>
 
-<!-- ─── NAV ──────────────────────────────────────────────── -->
 <nav>
-  <a href="#" class="logo">Haqq<span>Jobs</span></a>
+  <a href="#" class="logo">Abay<span>Jobs</span></a>
   <div class="nav-links">
     <a href="#" onclick="openPostModal(true)" style="color:#4ade80;font-weight:600;">Habesha Businesses: Post Free</a>
     <a href="#" onclick="alert('Dashboard coming soon!')">Sign In</a>
@@ -160,7 +159,6 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   </div>
 </nav>
 
-<!-- ─── HERO ──────────────────────────────────────────────── -->
 <div class="hero">
   <div class="hero-badge">UK Jobs for the Habesha Community</div>
   <h1>Find your next UK job<br><span>faster than anyone else</span></h1>
@@ -171,7 +169,6 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   </div>
 </div>
 
-<!-- ─── STATS ─────────────────────────────────────────────── -->
 <div class="stats">
   <div><div class="stat-num" id="total-count">—</div><div class="stat-lbl">Live jobs</div></div>
   <div><div class="stat-num">UK Wide</div><div class="stat-lbl">All locations</div></div>
@@ -179,7 +176,6 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   <div><div class="stat-num">Free</div><div class="stat-lbl">To browse</div></div>
 </div>
 
-<!-- ─── AD BAR ────────────────────────────────────────────── -->
 <div class="ad-bar">
   <div class="ad-inner">
     <div class="ad-text">
@@ -190,12 +186,9 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   </div>
 </div>
 
-<!-- ─── MAIN PAGE ─────────────────────────────────────────── -->
 <div class="page">
 
-  <!-- LEFT: job feed -->
   <div>
-    <!-- Filter pills -->
     <div class="filters">
       <button class="fpill active" id="btn-all" onclick="filterCategory('all')">All</button>
       <button class="fpill" id="btn-warehouse" onclick="filterCategory('warehouse')">Warehouse</button>
@@ -207,20 +200,17 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
       <span class="status-txt" id="status-txt">Connecting...</span>
     </div>
 
-    <!-- Habesha promo (shown above feed) -->
     <div class="habesha-hero">
       <h3>🇪🇹 🇪🇷 Ethiopian & Eritrean businesses — post jobs to our community</h3>
       <p>Restaurants, salons, shops and other Habesha businesses. First job post free for 30 days.</p>
       <button class="btn-green" onclick="openPostModal(true)">Post your job — free for Habesha businesses</button>
     </div>
 
-    <!-- Job cards -->
     <div id="jobs-list" class="jobs">
       <div class="loading"><div class="spinner"></div><p>Loading real UK jobs...</p><p style="font-size:12px;color:#aaa;margin-top:6px;">Please wait — may take up to 30 seconds</p></div>
     </div>
   </div>
 
-  <!-- RIGHT: sidebar -->
   <div class="sidebar">
     <div class="ad-scard">
       <h4>Advertise your business</h4>
@@ -242,7 +232,6 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   </div>
 </div>
 
-<!-- ─── APPLY MODAL ───────────────────────────────────────── -->
 <div id="apply-modal" class="overlay">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('apply-modal')">×</button>
@@ -263,14 +252,13 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   </div>
 </div>
 
-<!-- ─── POST JOB MODAL ────────────────────────────────────── -->
 <div id="post-modal" class="overlay">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('post-modal')">×</button>
-    <h3 id="post-title">Post a job on HaqqJobs</h3>
+    <h3 id="post-title">Post a job on AbayJobs</h3>
     <div class="pnote" id="post-note">£50 — listed for 30 days</div>
     <div class="fg"><label>Job Title</label><input type="text" placeholder="e.g. Warehouse Operative, Security Officer"></div>
-    <div class="fg"><label>Company Name</label><input type="text" placeholder="e.g. Haqq Logistics Ltd"></div>
+    <div class="fg"><label>Company Name</label><input type="text" placeholder="e.g. Abay Logistics Ltd"></div>
     <div class="fg"><label>Location</label><input type="text" placeholder="e.g. Birmingham, London (South)"></div>
     <div class="fg"><label>Salary Details</label><input type="text" placeholder="e.g. £12.50 / hour, £26,000 yearly"></div>
     <div class="mfooter">
@@ -280,11 +268,10 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   </div>
 </div>
 
-<!-- ─── ADVERTISE MODAL ───────────────────────────────────── -->
 <div class="overlay" id="ad-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('ad-modal')">×</button>
-    <h3>Advertise your business on HaqqJobs</h3>
+    <h3>Advertise your business on AbayJobs</h3>
     <p style="color:#666;font-size:13px;margin-bottom:1.25rem;">Reach thousands of Eritrean & Ethiopian people across the UK every month.</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;">
       <div style="border:1px solid #e8e8e3;border-radius:10px;padding:1rem;text-align:center;">
@@ -312,14 +299,14 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
 
 <script>
 // ─── CONFIG ──────────────────────────────────────────────────
-var API = '';
+var API = 'https://haqqjobs-api.onrender.com';
 
 var allJobs = [];
 var currentFilter = 'all';
 
 // ─── INIT ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function() {
-  loadJobs('warehouse', '');
+  loadJobs('warehouse security care cleaner driver', '');
 });
 
 // ─── SEARCH HANDLER ───────────────────────────────────────────
@@ -328,7 +315,7 @@ function handleSearch() {
   if (term.length > 0) {
     loadJobs(term, '');
   } else {
-    loadJobs('warehouse', '');
+    loadJobs('warehouse security care cleaner driver', '');
   }
 }
 
@@ -435,28 +422,35 @@ function showJobs(filter) {
     return;
   }
 
-  var html = '';
-  filtered.forEach(function(j) {
+  list.innerHTML = '';
+  filtered.forEach(function(j, index) {
     var srcClass = j.source.toLowerCase();
-    html += '<div class="job-card" onclick="openApplyModal(' + JSON.stringify(j).replace(/"/g, '&quot;') + ')">' +
-              '<div class="job-main">' +
-                '<div class="job-badge ' + escapeHTML(j.category) + '">' + escapeHTML(j.category).toUpperCase() + '</div>' +
-                '<div class="job-title">' + escapeHTML(j.title) + '</div>' +
-                '<div class="job-company">' + escapeHTML(j.company) + '</div>' +
-                '<div class="job-meta">' +
-                  '<div class="meta-item">📍 ' + escapeHTML(j.location) + '</div>' +
-                  '<div class="meta-item">💷 ' + j.salary + '</div>' +
-                  '<div class="meta-item">⏰ ' + escapeHTML(j.type) + '</div>' +
-                '</div>' +
-              '</div>' +
-              '<div class="job-side">' +
-                '<div class="source-tag ' + srcClass + '">' + j.source + '</div>' +
-                '<button class="btn-apply-card">View Details</button>' +
-                '<div class="jdate">' + escapeHTML(j.posted) + '</div>' +
-              '</div>' +
-            '</div>';
+    
+    var card = document.createElement('div');
+    card.className = 'job-card';
+    card.innerHTML = 
+      '<div class="job-main">' +
+        '<div class="job-badge ' + escapeHTML(j.category) + '">' + escapeHTML(j.category).toUpperCase() + '</div>' +
+        '<div class="job-title">' + escapeHTML(j.title) + '</div>' +
+        '<div class="job-company">' + escapeHTML(j.company) + '</div>' +
+        '<div class="job-meta">' +
+          '<div class="meta-item">📍 ' + escapeHTML(j.location) + '</div>' +
+          '<div class="meta-item">💷 ' + j.salary + '</div>' +
+          '<div class="meta-item">⏰ ' + escapeHTML(j.type) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="job-side">' +
+        '<div class="source-tag ' + srcClass + '">' + j.source + '</div>' +
+        '<button class="btn-apply-card">View Details</button>' +
+        '<div class="jdate">' + escapeHTML(j.posted) + '</div>' +
+      '</div>';
+      
+    card.addEventListener('click', function() {
+      openApplyModal(j);
+    });
+    
+    list.appendChild(card);
   });
-  list.innerHTML = html;
 }
 
 // ─── FILTER ───────────────────────────────────────────────────
@@ -497,9 +491,10 @@ function getDate(dtStr) {
   return dtStr.substring(0, 10);
 }
 
+// ─── ESCAPE HTML ─────────────────────────────────────────────
 function escapeHTML(str) {
   if (!str) return '';
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 // ─── MODAL CONTROLS ───────────────────────────────────────────
@@ -518,7 +513,7 @@ function openApplyModal(job) {
 }
 
 function openPostModal(isHabesha) {
-  document.getElementById('post-title').textContent = isHabesha ? 'Post a Habesha business job — free' : 'Post a job on HaqqJobs';
+  document.getElementById('post-title').textContent = isHabesha ? 'Post a Habesha business job — free' : 'Post a job on AbayJobs';
   document.getElementById('post-note').textContent = isHabesha ? 'FREE for 30 days — Habesha businesses only' : '£50 — listed for 30 days';
   document.getElementById('post-btn').textContent = isHabesha ? 'Post job free →' : 'Pay & post job →';
   openModal('post-modal');
