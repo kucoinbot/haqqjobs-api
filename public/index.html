@@ -51,6 +51,7 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
 .fpill { padding: 6px 14px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 13px; cursor: pointer; color: #555; transition: all 0.15s; }
 .fpill:hover { border-color: #4ade80; }
 .fpill.active { background: #0f1923; color: white; border-color: #0f1923; }
+.fpill:disabled { opacity: 0.4; cursor: not-allowed; }
 .status-txt { font-size: 11px; color: #aaa; margin-left: auto; }
 
 .jobs { display: flex; flex-direction: column; gap: 10px; }
@@ -142,8 +143,9 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   <a href="/" class="logo">Abay<span>Jobs</span></a>
   <div class="nav-links">
     <a href="#" onclick="openPostModal(true)" style="color:#4ade80;font-weight:600;">Habesha businesses: Post free</a>
-    <a href="#">Sign in</a>
-    <a href="#" onclick="openModal('register-modal')" class="btn-nav">My account</a>
+    <a href="#" onclick="openModal('signin-modal')">Sign in</a>
+    <a href="#" onclick="openModal('employer-signup-modal')" style="background:rgba(255,255,255,0.1);color:white;padding:7px 16px;border-radius:8px;font-size:13px;">For employers</a>
+    <a href="#" onclick="openModal('register-modal')" class="btn-nav">Job seeker sign up</a>
   </div>
 </nav>
 
@@ -155,40 +157,7 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   <div class="search-box">
     <div class="search-field">
       <span class="search-field-icon">🔍</span>
-      <select id="kw-select">
-        <option value="">All job types</option>
-        <optgroup label="Warehouse">
-          <option value="warehouse operative">Warehouse Operative</option>
-          <option value="amazon warehouse">Amazon Warehouse</option>
-          <option value="picker packer">Picker & Packer</option>
-          <option value="forklift operator">Forklift Operator</option>
-          <option value="night shift warehouse">Night Shift Warehouse</option>
-        </optgroup>
-        <optgroup label="Security">
-          <option value="security officer">Security Officer</option>
-          <option value="door supervisor">Door Supervisor</option>
-          <option value="security guard">Security Guard</option>
-        </optgroup>
-        <optgroup label="Construction">
-          <option value="construction labourer">Construction Labourer</option>
-          <option value="groundworker">Groundworker</option>
-          <option value="scaffolder">Scaffolder</option>
-        </optgroup>
-        <optgroup label="Driving">
-          <option value="van driver">Van Driver</option>
-          <option value="delivery driver">Delivery Driver</option>
-          <option value="hgv driver">HGV Driver</option>
-        </optgroup>
-        <optgroup label="Cleaning">
-          <option value="cleaning operative">Cleaning Operative</option>
-          <option value="office cleaner">Office Cleaner</option>
-        </optgroup>
-        <optgroup label="Care">
-          <option value="care assistant">Care Assistant</option>
-          <option value="support worker">Support Worker</option>
-          <option value="healthcare assistant">Healthcare Assistant</option>
-        </optgroup>
-      </select>
+      <input type="text" id="kw-input" placeholder="Job title or keyword e.g. Cleaner, Nurse, Plumber..." maxlength="80" />
     </div>
     <div class="search-field">
       <span class="search-field-icon">📍</span>
@@ -225,17 +194,22 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
 
     <div id="main-panel">
       <div class="filters">
-        <button class="fpill active" onclick="filterBy('all', this)">All</button>
-        <button class="fpill" onclick="filterBy('warehouse', this)">Warehouse</button>
-        <button class="fpill" onclick="filterBy('security', this)">Security</button>
-        <button class="fpill" onclick="filterBy('construction', this)">Construction</button>
-        <button class="fpill" onclick="filterBy('driver', this)">Driving</button>
-        <button class="fpill" onclick="filterBy('cleaning', this)">Cleaning</button>
-        <button class="fpill" onclick="filterBy('care', this)">Care work</button>
+        <button class="fpill active" onclick="quickSearch('', this)">All jobs</button>
+        <button class="fpill" onclick="quickSearch('warehouse', this)">Warehouse</button>
+        <button class="fpill" onclick="quickSearch('security', this)">Security</button>
+        <button class="fpill" onclick="quickSearch('construction', this)">Construction</button>
+        <button class="fpill" onclick="quickSearch('driver', this)">Driving</button>
+        <button class="fpill" onclick="quickSearch('cleaner', this)">Cleaning</button>
+        <button class="fpill" onclick="quickSearch('care assistant', this)">Care work</button>
         <span class="status-txt" id="status-txt">Connecting...</span>
       </div>
       <div class="jobs" id="jobs-list">
         <div class="loading"><div class="spinner"></div><p>Loading live jobs...</p></div>
+      </div>
+      <div id="pagination" style="display:none; justify-content:center; align-items:center; gap:12px; margin-top:1.25rem;">
+        <button id="btn-prev" class="fpill" onclick="goToPage(currentPage - 1)" style="padding:8px 18px;">← Previous</button>
+        <span id="page-indicator" style="font-size:13px; color:#888; font-weight:600;">Page 1</span>
+        <button id="btn-next" class="fpill" onclick="goToPage(currentPage + 1)" style="padding:8px 18px;">Next →</button>
       </div>
     </div>
 
@@ -271,8 +245,9 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
     </div>
     <div class="scard">
       <div class="stitle">Quick links</div>
-      <a href="#" onclick="openModal('register-modal')" class="qlink">👤 My account</a>
-      <a href="employer_dashboard.html" class="qlink">🏢 Employer dashboard</a>
+      <a href="#" onclick="openModal('signin-modal')" class="qlink">👤 Sign in</a>
+      <a href="#" onclick="openModal('register-modal')" class="qlink">📝 Job seeker sign up</a>
+      <a href="#" onclick="openModal('employer-signup-modal')" class="qlink">🏢 Employer sign up</a>
       <div class="qlink" onclick="openModal('ad-modal')">📢 Advertise here</div>
     </div>
   </div>
@@ -348,12 +323,13 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   </div>
 </div>
 
-<!-- REGISTER MODAL -->
+<!-- JOB SEEKER REGISTER MODAL -->
 <div class="overlay" id="register-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('register-modal')">×</button>
-    <h2>Create your free account</h2>
-    <p style="color:#666;font-size:13px;margin-bottom:1.25rem;">Register first, then unlock full access to apply for jobs.</p>
+    <h2>Job seeker sign up</h2>
+    <div class="pnote">£20 per year for full access · Cancel anytime</div>
+    <p style="color:#666;font-size:13px;margin-bottom:1.25rem;">Create your account below, then continue to payment to unlock unlimited job applications.</p>
     <div class="fg"><label>Full name</label><input type="text" id="reg-name" placeholder="Your full name" /></div>
     <div class="fg"><label>Email address</label><input type="email" id="reg-email" placeholder="your@email.com" /></div>
     <div class="fg"><label>Phone number</label><input type="tel" id="reg-phone" placeholder="07..." /></div>
@@ -365,7 +341,49 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
   </div>
 </div>
 
+<!-- SIGN IN MODAL -->
+<div class="overlay" id="signin-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('signin-modal')">×</button>
+    <h2>Sign in to AbayJobs</h2>
+    <p style="color:#666;font-size:13px;margin-bottom:1.25rem;">Job seeker or employer — sign in with your account email.</p>
+    <div class="fg"><label>Email address</label><input type="email" id="signin-email" placeholder="your@email.com" /></div>
+    <div class="fg"><label>Password</label><input type="password" id="signin-password" placeholder="Your password" /></div>
+    <div id="signin-status" style="font-size:13px;margin-bottom:0.5rem;"></div>
+    <div class="mfooter">
+      <button class="btn-cancel" onclick="closeModal('signin-modal')">Cancel</button>
+      <button class="btn-submit" onclick="doSignIn()">Sign in →</button>
+    </div>
+    <p style="font-size:12px;color:#888;text-align:center;margin-top:1rem;">
+      New here? <a href="#" onclick="closeModal('signin-modal');openModal('register-modal')" style="color:#0f6e56;font-weight:600;">Job seeker sign up</a>
+      or <a href="#" onclick="closeModal('signin-modal');openModal('employer-signup-modal')" style="color:#0f6e56;font-weight:600;">Employer sign up</a>
+    </p>
+  </div>
+</div>
+
+<!-- EMPLOYER SIGN UP MODAL -->
+<div class="overlay" id="employer-signup-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('employer-signup-modal')">×</button>
+    <h2>Employer sign up</h2>
+    <p style="color:#666;font-size:13px;margin-bottom:1.25rem;">Create your employer account to post jobs. Standard jobs from £50 · Habesha businesses post free for 30 days.</p>
+    <div class="fg"><label>Company / business name</label><input type="text" id="emp-company" placeholder="Your business name" /></div>
+    <div class="fg"><label>Contact name</label><input type="text" id="emp-contact" placeholder="Your full name" /></div>
+    <div class="fg"><label>Email address</label><input type="email" id="emp-email" placeholder="your@business.com" /></div>
+    <div class="fg"><label>Phone number</label><input type="tel" id="emp-phone" placeholder="07..." /></div>
+    <div class="fg"><label>Password</label><input type="password" id="emp-password" placeholder="Create a password" /></div>
+    <div class="mfooter">
+      <button class="btn-cancel" onclick="closeModal('employer-signup-modal')">Cancel</button>
+      <button class="btn-submit" onclick="createEmployerAccount()">Create employer account →</button>
+    </div>
+    <p style="font-size:12px;color:#888;text-align:center;margin-top:1rem;">
+      Already registered? <a href="#" onclick="closeModal('employer-signup-modal');openModal('signin-modal')" style="color:#0f6e56;font-weight:600;">Sign in</a>
+    </p>
+  </div>
+</div>
+
 <!-- PAYMENT MODAL -->
+
 <div class="overlay" id="payment-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('payment-modal')">×</button>
@@ -402,20 +420,20 @@ nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: sp
 <script>
 var API = '';
 var allJobs = [];
-var currentFilter = 'all';
+var currentKeywords = '';
+var currentLocation = '';
+var currentPage = 1;
+var pageCache = {}; // key: "page-keywords-location" -> jobs array
+var seenJobKeys = {}; // tracks duplicates across ALL pages of this search
 
 window.addEventListener('DOMContentLoaded', function() {
-  loadJobs('warehouse', '');
+  startNewSearch('', '');
 });
 
 function handleSearch() {
-  var kw = document.getElementById('kw-select').value;
+  var kw = document.getElementById('kw-input').value.trim();
   var loc = document.getElementById('city-input').value.trim();
-  if (kw.length > 0 || loc.length > 0) {
-    loadJobs(kw || 'warehouse', loc);
-  } else {
-    loadJobs('warehouse', '');
-  }
+  startNewSearch(kw, loc);
 }
 
 function doSearch() { handleSearch(); }
@@ -425,17 +443,45 @@ function cleanLocationName(loc, fallbackSearch) {
   return loc.trim();
 }
 
-function loadJobs(kw, loc) {
+// Starts a brand new search — resets page back to 1 and clears cache
+// because a different keyword/city means different results entirely.
+function startNewSearch(kw, loc) {
+  currentKeywords = kw || '';
+  currentLocation = loc || '';
+  currentPage = 1;
+  pageCache = {};
+  seenJobKeys = {};
+  loadPage(1);
+}
+
+function goToPage(page) {
+  if (page < 1) return;
+  currentPage = page;
+  loadPage(page);
+  window.scrollTo({ top: document.querySelector('.page').offsetTop - 80, behavior: 'smooth' });
+}
+
+function cacheKey(page) {
+  return page + '||' + currentKeywords.toLowerCase() + '||' + currentLocation.toLowerCase();
+}
+
+function loadPage(page) {
   var list = document.getElementById('jobs-list');
   var status = document.getElementById('status-txt');
+  var key = cacheKey(page);
+
+  // Serve instantly from cache if we already fetched this page
+  if (pageCache[key]) {
+    allJobs = pageCache[key];
+    renderPage();
+    return;
+  }
+
   list.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading live jobs...</p></div>';
   if (status) status.textContent = 'Connecting...';
 
-  var keywords = kw || 'warehouse';
-  var location = loc || '';
-
-  var reedUrl = API + '/api/reed?keywords=' + encodeURIComponent(keywords) + '&location=' + encodeURIComponent(location);
-  var adzunaUrl = API + '/api/adzuna?keywords=' + encodeURIComponent(keywords) + '&location=' + encodeURIComponent(location);
+  var reedUrl = API + '/api/reed?keywords=' + encodeURIComponent(currentKeywords) + '&location=' + encodeURIComponent(currentLocation) + '&page=' + page;
+  var adzunaUrl = API + '/api/adzuna?keywords=' + encodeURIComponent(currentKeywords) + '&location=' + encodeURIComponent(currentLocation) + '&page=' + page;
 
   Promise.allSettled([
     fetch(reedUrl).then(function(r) { if (!r.ok) throw new Error(); return r.json(); }),
@@ -451,7 +497,7 @@ function loadJobs(kw, loc) {
           id: 'r_' + j.jobId,
           title: j.jobTitle || 'Job',
           company: j.employerName || 'Employer',
-          location: cleanLocationName(j.locationName, location),
+          location: cleanLocationName(j.locationName, currentLocation),
           salary: getSalary(j.minimumSalary),
           type: j.jobType || 'Full-time',
           posted: getDate(j.date),
@@ -471,7 +517,7 @@ function loadJobs(kw, loc) {
           id: 'a_' + j.id,
           title: j.title || 'Job',
           company: (j.company && j.company.display_name) || 'Employer',
-          location: cleanLocationName(locDisplay, location),
+          location: cleanLocationName(locDisplay, currentLocation),
           salary: getSalary(j.salary_min),
           type: j.contract_time === 'permanent' ? 'Full-time' : (j.contract_time || 'Full-time'),
           posted: getDate(j.created),
@@ -483,43 +529,57 @@ function loadJobs(kw, loc) {
       adzunaCount = results[1].value.results.length;
     }
 
-    var seenKeys = {};
+    // Remove duplicates — checked against EVERY page seen so far in
+    // this search, not just within this one page.
     var uniqueJobs = [];
     rawJobs.forEach(function(job) {
       var uniqueKey = (job.title + '||' + job.company + '||' + job.location.substring(0, 5)).toLowerCase().replace(/\s+/g, '');
-      if (!seenKeys[uniqueKey]) {
-        seenKeys[uniqueKey] = true;
+      if (!seenJobKeys[uniqueKey]) {
+        seenJobKeys[uniqueKey] = true;
         uniqueJobs.push(job);
       }
     });
 
+    pageCache[key] = uniqueJobs;
     allJobs = uniqueJobs;
 
     if (status) {
-      status.textContent = 'Reed: ' + reedCount + ' · Adzuna: ' + adzunaCount + ' — ' + allJobs.length + ' jobs found';
+      status.textContent = 'Reed: ' + reedCount + ' · Adzuna: ' + adzunaCount + ' — page ' + page;
       status.style.color = '#0f6e56';
     }
 
-    var totalEl = document.getElementById('total-count');
-    if (totalEl) totalEl.textContent = allJobs.length > 0 ? allJobs.length + '+' : '0';
-
-    showJobs(currentFilter);
+    renderPage();
   }).catch(function() {
     list.innerHTML = '<div class="loading">Could not connect to server. Please refresh.</div>';
     if (status) { status.textContent = 'Connection error'; status.style.color = '#cc0000'; }
   });
 }
 
-function showJobs(filter) {
+function renderPage() {
+  showJobs();
+
+  var totalEl = document.getElementById('total-count');
+  if (totalEl) totalEl.textContent = allJobs.length > 0 ? allJobs.length + '+' : '0';
+
+  var pag = document.getElementById('pagination');
+  var indicator = document.getElementById('page-indicator');
+  var prevBtn = document.getElementById('btn-prev');
+  var nextBtn = document.getElementById('btn-next');
+
+  pag.style.display = 'flex';
+  indicator.textContent = 'Page ' + currentPage;
+  prevBtn.disabled = currentPage <= 1;
+  // Disable Next only if this page came back empty — otherwise
+  // we always let them try, since either API may still have more.
+  nextBtn.disabled = allJobs.length === 0;
+}
+
+function showJobs() {
   var list = document.getElementById('jobs-list');
   var filtered = allJobs;
 
-  if (filter !== 'all') {
-    filtered = allJobs.filter(function(j) { return j.category === filter; });
-  }
-
   if (filtered.length === 0) {
-    list.innerHTML = '<div class="loading">No jobs listed in this category currently. Try searching another town or role above!</div>';
+    list.innerHTML = '<div class="loading">No more jobs found for this search on this page. Try Previous, or search a different job title or city!</div>';
     return;
   }
 
@@ -547,11 +607,12 @@ function showJobs(filter) {
   list.innerHTML = html;
 }
 
-function filterBy(cat, btn) {
-  currentFilter = cat;
+function quickSearch(kw, btn) {
   document.querySelectorAll('.fpill').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
-  showJobs(cat);
+  document.getElementById('kw-input').value = kw;
+  var loc = document.getElementById('city-input').value.trim();
+  startNewSearch(kw, loc);
 }
 
 function getCategory(title) {
@@ -622,6 +683,12 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 // ─── ACCOUNT / PAYMENT STATE ─────────────────────────────────
 var registeredUser = null;
 var hasAccess = false;
+var registeredEmployer = null;
+
+// Simple in-memory "accounts" so Sign In has something to check
+// against in this demo. Once a real backend exists, replace this
+// with an actual login API call instead of checking this list.
+var knownAccounts = [];
 
 function goToPayment() {
   var name = document.getElementById('reg-name').value.trim();
@@ -634,9 +701,65 @@ function goToPayment() {
     return;
   }
 
-  registeredUser = { name: name, email: email, phone: phone };
+  registeredUser = { name: name, email: email, phone: phone, password: password, type: 'jobseeker' };
+  knownAccounts.push(registeredUser);
   closeModal('register-modal');
   openModal('payment-modal');
+}
+
+function createEmployerAccount() {
+  var company = document.getElementById('emp-company').value.trim();
+  var contact = document.getElementById('emp-contact').value.trim();
+  var email = document.getElementById('emp-email').value.trim();
+  var phone = document.getElementById('emp-phone').value.trim();
+  var password = document.getElementById('emp-password').value.trim();
+
+  if (!company || !contact || !email || !phone || !password) {
+    alert('Please fill in all fields to create your employer account.');
+    return;
+  }
+
+  registeredEmployer = { company: company, contact: contact, email: email, phone: phone, password: password, type: 'employer' };
+  knownAccounts.push(registeredEmployer);
+  closeModal('employer-signup-modal');
+  alert('Employer account created for ' + company + '! You can now post jobs — click "Post a job" to get started.');
+}
+
+function doSignIn() {
+  var email = document.getElementById('signin-email').value.trim();
+  var password = document.getElementById('signin-password').value.trim();
+  var statusEl = document.getElementById('signin-status');
+
+  if (!email || !password) {
+    statusEl.textContent = 'Please enter your email and password.';
+    statusEl.style.color = '#cc0000';
+    return;
+  }
+
+  var account = knownAccounts.find(function(a) { return a.email === email && a.password === password; });
+
+  if (!account) {
+    statusEl.textContent = 'No account found with those details. Please sign up first.';
+    statusEl.style.color = '#cc0000';
+    return;
+  }
+
+  statusEl.textContent = 'Signed in successfully!';
+  statusEl.style.color = '#0f6e56';
+
+  if (account.type === 'jobseeker') {
+    registeredUser = account;
+    setTimeout(function() {
+      closeModal('signin-modal');
+      alert('Welcome back, ' + account.name + '!');
+    }, 600);
+  } else {
+    registeredEmployer = account;
+    setTimeout(function() {
+      closeModal('signin-modal');
+      alert('Welcome back, ' + account.company + '!');
+    }, 600);
+  }
 }
 
 function processPayment() {
