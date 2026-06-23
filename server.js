@@ -9,8 +9,6 @@ const REED_KEY = process.env.REED_API_KEY;
 const ADZUNA_APP_ID = process.env.ADZUNA_APP_ID;
 const ADZUNA_APP_KEY = process.env.ADZUNA_APP_KEY;
 
-const PAGE_SIZE = 20; // jobs per page shown to the user
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
@@ -18,81 +16,57 @@ app.use((req, res, next) => {
   next();
 });
 
-function fetchJSON(url, headers = {}, timeoutMs = 15000) {
+function fetchJSON(url, headers = {}) {
   return new Promise((resolve, reject) => {
-    const req = https.get(url, { headers }, (res) => {
-      let body = '';
-      res.on('data', chunk => body += chunk);
+    https.get(url, { headers }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
       res.on('end', () => {
-        try { resolve(JSON.parse(body)); }
-        catch(e) { reject(new Error('Invalid JSON')); }
+        try { resolve(JSON.parse(data)); }
+        catch { resolve({ results: [] }); }
       });
-    });
-    req.setTimeout(timeoutMs, () => {
-      req.destroy();
-      reject(new Error('Timeout'));
-    });
-    req.on('error', reject);
+    }).on('error', () => resolve({ results: [] }));
   });
 }
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'running' });
-});
-
-// ─── REED API ──────────────────────────────────────────────
-// Reed pages using "resultsToSkip". page=1 -> skip 0, page=2 -> skip 20, etc.
+// Reed
 app.get('/api/reed', async (req, res) => {
-  const keywords = req.query.keywords || '';
-  const location = req.query.location || '';
-  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-  const skip = (page - 1) * PAGE_SIZE;
+  const { keywords = '', location = '', page = 1 } = req.query;
 
   const params = new URLSearchParams({
-    resultsToTake: String(PAGE_SIZE),
-    resultsToSkip: String(skip)
+    keywords,
+    locationName: location,
+    resultsToTake: '100',
+    resultsToSkip: (page - 1) * 100
   });
-  if (keywords) params.set('keywords', keywords);
-  if (location) params.set('locationName', location);
 
   const url = `https://www.reed.co.uk/api/1.0/search?${params}`;
   const auth = Buffer.from(`${REED_KEY}:`).toString('base64');
 
-  try {
-    const data = await fetchJSON(url, { 'Authorization': `Basic ${auth}`, 'User-Agent': 'AbayJobs/1.0' });
-    res.json(data);
-  } catch(e) {
-    res.json({ results: [], error: e.message });
-  }
+  const data = await fetchJSON(url, { Authorization: `Basic ${auth}` });
+  res.json(data);
 });
 
-// ─── ADZUNA API ────────────────────────────────────────────
-// Adzuna pages natively: /search/1, /search/2, /search/3 ...
+// Adzuna
 app.get('/api/adzuna', async (req, res) => {
-  const keywords = req.query.keywords || '';
-  const location = req.query.location || '';
-  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const { keywords = '', location = '', page = 1 } = req.query;
 
   const params = new URLSearchParams({
     app_id: ADZUNA_APP_ID,
     app_key: ADZUNA_APP_KEY,
-    results_per_page: String(PAGE_SIZE)
+    results_per_page: '100',
+    what: keywords,
+    where: location
   });
-  if (keywords) params.set('what', keywords);
-  if (location) params.set('where', location);
 
   const url = `https://api.adzuna.com/v1/api/jobs/gb/search/${page}?${params}`;
+  const data = await fetchJSON(url);
 
-  try {
-    const data = await fetchJSON(url, { 'User-Agent': 'AbayJobs/1.0' });
-    res.json(data);
-  } catch(e) {
-    res.json({ results: [], error: e.message });
-  }
+  res.json(data);
 });
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`AbayJobs running on port ${PORT}`));
+app.listen(PORT, () => console.log('Server running'));
