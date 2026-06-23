@@ -1,7 +1,7 @@
 {
-  "name": "haqqjobs-api",
-  "version": "2.0.0",
-  "description": "HaqqJobs API server — fetches UK jobs from Reed and Adzuna",
+  "name": "abayjobs",
+  "version": "3.0.0",
+  "description": "AbayJobs professional job aggregator",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -10,6 +10,6 @@
     "express": "^4.18.2"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18"
   }
 }
