@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employer Dashboard — AbayJobs</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; }
+
+nav { background: #0f1923; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; height: 58px; position: sticky; top: 0; z-index: 100; }
+.logo { color: white; font-size: 1.3rem; font-weight: 700; text-decoration: none; }
+.logo span { color: #4ade80; }
+.nav-links { display: flex; gap: 1rem; align-items: center; }
+.nav-links a { color: rgba(255,255,255,0.7); font-size: 13px; text-decoration: none; }
+.nav-links a:hover { color: white; }
+
+.wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+.account-header { background: linear-gradient(135deg, #0f1923, #1a2d1a); border-radius: 14px; padding: 1.75rem; color: white; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.account-header h1 { font-size: 1.4rem; margin-bottom: 4px; }
+.account-header p { font-size: 13px; color: rgba(255,255,255,0.6); }
+.btn-post-new { padding: 10px 20px; background: #4ade80; color: #0a1a0a; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
+
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.stat-box { background: white; border: 1px solid #e8e8e3; border-radius: 12px; padding: 1.25rem; text-align: center; }
+.stat-box .num { font-size: 1.6rem; font-weight: 700; color: #0f6e56; }
+.stat-box .lbl { font-size: 12px; color: #888; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.scard { background: white; border: 1px solid #e8e8e3; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+.scard h3 { font-size: 14px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
+.empty-state { text-align: center; padding: 2.5rem 1rem; color: #888; }
+.empty-state .icon { font-size: 2rem; margin-bottom: 0.75rem; }
+
+.job-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #f0f0eb; gap: 1rem; }
+.job-row:last-child { border-bottom: none; }
+.job-row-title { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+.job-row-meta { font-size: 12px; color: #888; }
+.job-row-status { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; flex-shrink: 0; }
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-live { background: #e1f5ee; color: #0f6e56; }
+
+.fg { margin-bottom: 1rem; }
+.fg label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 5px; }
+.fg input, .fg select, .fg textarea { width: 100%; padding: 10px 13px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; font-family: inherit; }
+.fg textarea { resize: vertical; min-height: 80px; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.btn-save { padding: 10px 22px; background: #0f1923; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; }
+.btn-submit-job { padding: 10px 22px; background: #4ade80; color: #0a1a0a; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
+
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,25,35,0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding: 1rem; }
+.overlay.open { opacity: 1; pointer-events: auto; }
+.modal { background: white; width: 100%; max-width: 480px; border-radius: 16px; padding: 2rem; max-height: 90vh; overflow-y: auto; position: relative; }
+.modal-close { position: absolute; top: 1rem; right: 1rem; background: #f1f5f9; border: none; font-size: 18px; color: #666; cursor: pointer; width: 30px; height: 30px; border-radius: 50%; }
+.pnote { background: #e1f5ee; color: #0f6e56; font-size: 13px; padding: 9px 13px; border-radius: 8px; margin-bottom: 1rem; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Abay<span>Jobs</span></a>
+  <div class="nav-links">
+    <a href="/">← Back to jobs</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="account-header">
+    <div>
+      <h1 id="welcome-company">Employer dashboard</h1>
+      <p id="welcome-contact">Loading your account...</p>
+    </div>
+    <button class="btn-post-new" onclick="openPostModal()">+ Post a new job</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="num" id="stat-active">0</div><div class="lbl">Active jobs</div></div>
+    <div class="stat-box"><div class="num" id="stat-pending">0</div><div class="lbl">Pending review</div></div>
+    <div class="stat-box"><div class="num">0</div><div class="lbl">Applications received</div></div>
+  </div>
+
+  <div class="scard">
+    <h3>Your posted jobs</h3>
+    <div id="job-list">
+      <div class="empty-state">
+        <div class="icon">📋</div>
+        <p>You haven't posted any jobs yet.</p>
+        <p style="font-size:12px;margin-top:6px;"><a href="#" onclick="openPostModal()" style="color:#0f6e56;">Post your first job →</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="post-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h2 style="font-size:1.2rem;margin-bottom:6px;">Post a job</h2>
+    <div class="pnote" id="post-price-note">£50 — listed for 30 days</div>
+    <div class="frow">
+      <div class="fg"><label>Job title</label><input type="text" id="job-title" placeholder="e.g. Kitchen Assistant" /></div>
+      <div class="fg"><label>Location</label><input type="text" id="job-location" placeholder="e.g. Sheffield" /></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>Salary</label><input type="text" id="job-salary" placeholder="e.g. £12.21/hr" /></div>
+      <div class="fg"><label>Job type</label><select id="job-type"><option>Full-time</option><option>Part-time</option><option>Temporary</option></select></div>
+    </div>
+    <div class="fg"><label>Job description</label><textarea id="job-desc" placeholder="What will the person do? Hours? Experience needed?"></textarea></div>
+    <button class="btn-submit-job" style="width:100%;" onclick="submitJob()">Submit job for review →</button>
+  </div>
+</div>
+
+<script>
+function loadEmployer() {
+  var raw = sessionStorage.getItem('abayjobs_employer');
+
+  if (!raw) {
+    document.getElementById('welcome-company').textContent = 'No employer account found';
+    document.getElementById('welcome-contact').textContent = 'Please sign up as an employer from the homepage first.';
+    document.querySelector('.btn-post-new').style.display = 'none';
+    return;
+  }
+
+  var emp = JSON.parse(raw);
+  document.getElementById('welcome-company').textContent = emp.company;
+  document.getElementById('welcome-contact').textContent = emp.contact + ' · ' + emp.email;
+
+  var postedJobs = JSON.parse(sessionStorage.getItem('abayjobs_posted_jobs') || '[]');
+  renderJobs(postedJobs);
+}
+
+function renderJobs(jobs) {
+  var list = document.getElementById('job-list');
+  document.getElementById('stat-active').textContent = jobs.filter(function(j) { return j.status === 'live'; }).length;
+  document.getElementById('stat-pending').textContent = jobs.filter(function(j) { return j.status === 'pending'; }).length;
+
+  if (jobs.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>You haven\\'t posted any jobs yet.</p><p style="font-size:12px;margin-top:6px;"><a href="#" onclick="openPostModal()" style="color:#0f6e56;">Post your first job →</a></p></div>';
+    return;
+  }
+
+  var html = '';
+  jobs.forEach(function(j) {
+    html += '<div class="job-row">' +
+      '<div><div class="job-row-title">' + j.title + '</div><div class="job-row-meta">' + j.location + ' · ' + j.salary + ' · ' + j.type + '</div></div>' +
+      '<span class="job-row-status status-' + j.status + '">' + j.status + '</span>' +
+    '</div>';
+  });
+  list.innerHTML = html;
+}
+
+function openPostModal() { document.getElementById('post-modal').classList.add('open'); }
+function closeModal() { document.getElementById('post-modal').classList.remove('open'); }
+
+function submitJob() {
+  var title = document.getElementById('job-title').value.trim();
+  var location = document.getElementById('job-location').value.trim();
+  var salary = document.getElementById('job-salary').value.trim();
+  var type = document.getElementById('job-type').value;
+  var desc = document.getElementById('job-desc').value.trim();
+
+  if (!title || !location || !salary) {
+    alert('Please fill in job title, location and salary.');
+    return;
+  }
+
+  var jobs = JSON.parse(sessionStorage.getItem('abayjobs_posted_jobs') || '[]');
+  jobs.push({ title: title, location: location, salary: salary, type: type, description: desc, status: 'pending' });
+  sessionStorage.setItem('abayjobs_posted_jobs', JSON.stringify(jobs));
+
+  closeModal();
+  renderJobs(jobs);
+  alert('Job submitted! It will appear once reviewed and approved by AbayJobs.');
+}
+
+document.getElementById('post-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+loadEmployer();
+</script>
+</body>
+</html>
